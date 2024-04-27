@@ -11,7 +11,7 @@ from datetime import datetime
 @app.route("/")
 def get_todos():
     todos = []
-    for todo in db.todos_flask.find().sort("date_created", -1):
+    for todo in db.todo_flask.find().sort("date_created", -1):
         todo["_id"] = str(todo["_id"])
         todo["date_created"] = todo["date_created"].strftime("%b %d %Y %H:%M:%S")
         todos.append(todo)
@@ -27,7 +27,7 @@ def add_todo():
         todo_description = form.description.data
         completed = form.completed.data
 
-        db.todos_flask.insert_one({
+        db.todo_flask.insert_one({
             "name": todo_name,
             "description": todo_description,
             "completed": completed,
@@ -42,7 +42,7 @@ def add_todo():
 
 @app.route("/delete_todo/<id>")
 def delete_todo(id):
-    db.todos_flask.find_one_and_delete({"_id": ObjectId(id)})
+    db.todo_flask.find_one_and_delete({"_id": ObjectId(id)})
     flash("Todo successfully deleted", "success")
     return redirect("/")
 
@@ -55,7 +55,7 @@ def update_todo(id):
         todo_description = form.description.data
         completed = form.completed.data
 
-        db.todos_flask.find_one_and_update({"_id": ObjectId(id)}, {"$set": {
+        db.todo_flask.find_one_and_update({"_id": ObjectId(id)}, {"$set": {
             "name": todo_name,
             "description": todo_description,
             "completed": completed,
@@ -66,7 +66,7 @@ def update_todo(id):
     else:
         form = TodoForm()
 
-        todo = db.todos_flask.find_one_or_404({"_id": ObjectId(id)})
+        todo = db.todo_flask.find_one_or_404({"_id": ObjectId(id)})
         print(todo)
         form.name.data = todo.get("name", None)
         form.description.data = todo.get("description", None)
